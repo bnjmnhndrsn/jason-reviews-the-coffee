@@ -13,6 +13,7 @@ def get_history_before(hypchat, room_id, endtime):
     date = 'recent'
     while fetch_again:
         latest_fetch = hypchat.get_room(room_id).history(date=date)
+        sleep(3)
         for item in reversed(latest_fetch['items']):
             date = item['date']
             if date < endtime:
@@ -27,11 +28,13 @@ def filter_results(list, functions):
     
     for item in list:
         passes = True
-        
-        for fn in functions:
-            passes = fn(item)
-            if not passes:
-                break 
+        try:
+            for fn in functions:
+                passes = fn(item)
+                if not passes:
+                    break 
+        except:
+            passes = False
         
         if passes:
             result.append(item)
