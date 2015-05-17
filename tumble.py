@@ -12,6 +12,7 @@ def get_history_before(hypchat, room_id, endtime):
     fetch_again = True
     date = 'recent'
     while fetch_again:
+        print 'fetching for for this date: {0}'.format(date)
         latest_fetch = hypchat.get_room(room_id).history(date=date)
         sleep(3)
         for item in reversed(latest_fetch['items']):
@@ -67,7 +68,7 @@ REGEXES = (
     r'this coffee',
 )
 
-one_hour_ago = (datetime.datetime.now() - datetime.timedelta(days=7)).replace(tzinfo=dateutil.tz.tzutc())
+one_hour_ago = (datetime.datetime.now() - datetime.timedelta(hours=1)).replace(tzinfo=dateutil.tz.tzutc())
 history = get_history_before(hc, ROOM_ID, one_hour_ago)
 filtered = filter_results(history, [filter_by_id, filter_by_text])
 
