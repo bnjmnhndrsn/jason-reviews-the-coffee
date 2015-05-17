@@ -72,6 +72,8 @@ one_hour_ago = (datetime.datetime.now() - datetime.timedelta(hours=1)).replace(t
 history = get_history_before(hc, ROOM_ID, one_hour_ago)
 filtered = filter_results(history, [filter_by_id, filter_by_text])
 
+print "messages retrieved after filtering: {0}".format(len(filtered))
+
 client = pytumblr.TumblrRestClient(
     os.environ['TUMBLR_CONSUMER_KEY'],
     os.environ['TUMBLR_SECRET_KEY'],
