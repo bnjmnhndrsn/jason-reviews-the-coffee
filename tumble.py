@@ -3,6 +3,7 @@ import datetime
 import dateutil.tz
 import hypchat
 import re
+import os
 from time import sleep
 
 
