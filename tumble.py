@@ -3,7 +3,6 @@ import datetime
 import dateutil.tz
 import hypchat
 import re
-from local_settings import *
 from time import sleep
 
 
