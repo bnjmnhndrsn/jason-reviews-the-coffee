@@ -1,3 +1,5 @@
+import pytumblr
+
 def post_to_tumblr(client, params):
     return client.create_quote("jasonreviewscoffee", **params)         
     
