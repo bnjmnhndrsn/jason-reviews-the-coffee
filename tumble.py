@@ -5,7 +5,7 @@ import hypchat
 import re
 import os
 from time import sleep
-
+from rauth import OAuth1Service
 
 def get_history_before(hypchat, room_id, endtime):
     result = []
@@ -52,7 +52,7 @@ def filter_by_text(item):
     return False
     
 def post_to_tumblr(client, params):
-    client.create_quote("jasonreviewscoffee", **params)         
+    return client.create_quote("jasonreviewscoffee", **params)         
     
 
 hc = hypchat.HypChat(os.environ['HIPCHAT_TOKEN'])
@@ -74,20 +74,34 @@ filtered = filter_results(history, [filter_by_id, filter_by_text])
 
 print "messages retrieved after filtering: {0}".format(len(filtered))
 
+tumblr = OAuth1Service(
+    name='twitter',
+    consumer_key=os.environ['TUMBLR_CONSUMER_KEY'],
+    consumer_secret=  os.environ['TUMBLR_SECRET_KEY'],
+    request_token_url='http://www.tumblr.com/oauth/request_token',
+    access_token_url='http://www.tumblr.com/oauth/access_token',
+    authorize_url='http://www.tumblr.com/oauth/authorize',
+    base_url='https://api.tumblr.com/v2/',
+)
+
+request_token, request_token_secret = tumblr.get_request_token()
+
 client = pytumblr.TumblrRestClient(
     os.environ['TUMBLR_CONSUMER_KEY'],
     os.environ['TUMBLR_SECRET_KEY'],
-    os.environ['TUMBLR_OAUTH_TOKEN'],
-    os.environ['TUMBLR_OAUTH_SECRET'],
+    request_token,
+    request_token_secret
 )
 
 for item in filtered:
     print 'posting quote: "{0}"'.format(item['message'])
     
-    post_to_tumblr(client, {
+    response = post_to_tumblr(client, {
         'state': 'published',
         'tags': ['jasonreviewsthecoffee'],
         'date': str(item['date']),
         'quote': item['message'],
         'source': 'Jason'
     })
+    
+    print response
