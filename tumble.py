@@ -4,6 +4,7 @@ import dateutil.tz
 import hypchat
 import re
 import os
+import sys
 from time import sleep
 from rauth import OAuth1Service
 
@@ -52,7 +53,7 @@ def filter_by_text(item):
     return False
     
 def post_to_tumblr(client, params):
-    return client.create_quote("jasonreviewscoffee", **params)         
+    return client.create_quote("jasonreviewsthecoffee", **params)         
     
 
 hc = hypchat.HypChat(os.environ['HIPCHAT_TOKEN'])
@@ -68,29 +69,22 @@ REGEXES = (
     r'this coffee',
 )
 
-one_hour_ago = (datetime.datetime.now() - datetime.timedelta(hours=1)).replace(tzinfo=dateutil.tz.tzutc())
+time_frame = {
+    sys.argv[1]: int(sys.argv[2])
+}
+
+cut_off_time = (datetime.datetime.now() - datetime.timedelta(**time_frame)).replace(tzinfo=dateutil.tz.tzutc())
 history = get_history_before(hc, ROOM_ID, one_hour_ago)
 filtered = filter_results(history, [filter_by_id, filter_by_text])
 
 print "messages retrieved after filtering: {0}".format(len(filtered))
 
-tumblr = OAuth1Service(
-    name='twitter',
-    consumer_key=os.environ['TUMBLR_CONSUMER_KEY'],
-    consumer_secret=  os.environ['TUMBLR_SECRET_KEY'],
-    request_token_url='http://www.tumblr.com/oauth/request_token',
-    access_token_url='http://www.tumblr.com/oauth/access_token',
-    authorize_url='http://www.tumblr.com/oauth/authorize',
-    base_url='https://api.tumblr.com/v2/',
-)
-
-request_token, request_token_secret = tumblr.get_request_token()
 
 client = pytumblr.TumblrRestClient(
     os.environ['TUMBLR_CONSUMER_KEY'],
     os.environ['TUMBLR_SECRET_KEY'],
-    request_token,
-    request_token_secret
+    os.environ['TUMBLR_OAUTH_TOKEN'],
+    os.environ['TUMBLR_OAUTH_SECRET'],
 )
 
 for item in filtered:
