@@ -74,7 +74,7 @@ time_frame = {
 }
 
 cut_off_time = (datetime.datetime.now() - datetime.timedelta(**time_frame)).replace(tzinfo=dateutil.tz.tzutc())
-history = get_history_before(hc, ROOM_ID, one_hour_ago)
+history = get_history_before(hc, ROOM_ID, cut_off_time)
 filtered = filter_results(history, [filter_by_id, filter_by_text])
 
 print "messages retrieved after filtering: {0}".format(len(filtered))
